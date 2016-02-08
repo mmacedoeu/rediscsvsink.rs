@@ -1,0 +1,4 @@
+[package]
+name = "rediscsvsinkrs"
+version = "0.1.0"
+authors = ["mmacedoeu <contato@mmacedo.eu.org>"]
