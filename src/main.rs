@@ -42,21 +42,40 @@ impl From<types::RedisError> for MyError  {
     }
 }
 
+
 impl From<io::Error> for MyError {
     fn from(err: io::Error) -> MyError {
         MyError::Io(err)
     }	
 }
+/*
+impl error::Error for MyError {
+    fn description(&self) -> &str {
 
+    }
+
+    fn cause(&self) -> Option<&error::Error> {
+
+    }
+} 
 
 impl From<MyError> for io::Error {
     fn from(err: MyError) -> io::Error {
-    	match err {
-    	    MyError::Redis(types::ErrorRepr::IoError(err)) => io::Error (err),
-    	    MyError::Io(err) => io::Error (err),
-    	    _ => io::Error {},
-    	}        
+    	io::Error::new(io::ErrorKind::Interrupted, err);
+    	
+    	// match err {
+    	//     MyError::Redis(types::ErrorRepr::IoError(err)) => io::Error (err),
+    	//     MyError::Io(err) => io::Error (err),
+    	//     _ => io::Error {},
+    	// }        
     }		
+} */
+
+impl From<types::RedisError> for io::Error {
+	fn from(err: types::RedisError) -> io::Error {
+		let myerr = MyError::Io(err);
+		myerr
+	}
 }
 
 fn handle_item (item : &str) -> Result<(), throw::Error<io::Error>> {
