@@ -13,7 +13,7 @@ use std::collections::HashMap;
 use std::env;
 use log::{LogRecord, LogLevelFilter};
 use env_logger::LogBuilder;
-use std::io::Error;
+use std::io;
 use redis::types::RedisError;
 
 extern "C" {
@@ -34,32 +34,36 @@ fn get_client_addr() -> redis::ConnectionAddr {
 	redis::ConnectionAddr::Unix(PathBuf::from(SERVER_UNIX_PATH))
 }
 
-enum MyError {Io(Error), Redis(RedisError)}
+enum MyError {Io(io::Error), Redis(RedisError)}
 
 impl From<RedisError> for MyError  {
     fn from(err: RedisError) -> MyError {
-        MyError::Redis {}
+        MyError::Redis(err)
     }
 }
 
-impl From<Error> for MyError {
-    fn from(err: Error) -> MyError {
-        MyError::Io {}
+impl From<io::Error> for MyError {
+    fn from(err: io::Error) -> MyError {
+        MyError::Io(err)
     }	
 }
 
-impl From<MyError> for Error {
-    fn from(err: MyError) -> Error {
-        Error {}
+/*
+impl From<MyError> for io::Error {
+    fn from(err: MyError) -> io::Error {
+    	match err {
+    	    MyError::Redis(err) => io::Error (err),
+    	    MyError::Io(err) => io::Error (err),
+    	}        
     }		
-}
+}*/
 
-fn handle_item (item : &str) -> Result<(), throw::Error<Error>> {
+fn handle_item (item : &str) -> Result<(), throw::Error<io::Error>> {
 
 	Ok(())
 }
 
-fn handle(listname : String, con: redis::Connection) -> Result<(), throw::Error<Error>> {
+fn handle(listname : String, con: redis::Connection) -> Result<(), throw::Error<io::Error>> {
 
    loop {        
             unsafe {
