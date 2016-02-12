@@ -34,11 +34,24 @@ fn get_client_addr() -> redis::ConnectionAddr {
 	redis::ConnectionAddr::Unix(PathBuf::from(SERVER_UNIX_PATH))
 }
 
-impl From<RedisError> for Error  {
+enum MyError {Io(Error), Redis(RedisError)}
 
-    fn from(err: RedisError) -> Error {
-        Error {}
+impl From<RedisError> for MyError  {
+    fn from(err: RedisError) -> MyError {
+        MyError::Redis {}
     }
+}
+
+impl From<Error> for MyError {
+    fn from(err: Error) -> MyError {
+        MyError::Io {}
+    }	
+}
+
+impl From<MyError> for Error {
+    fn from(err: MyError) -> Error {
+        Error {}
+    }		
 }
 
 fn handle_item (item : &str) -> Result<(), throw::Error<Error>> {
