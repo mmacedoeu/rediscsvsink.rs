@@ -14,6 +14,7 @@ use std::env;
 use log::{LogRecord, LogLevelFilter};
 use env_logger::LogBuilder;
 use std::io::Error;
+use redis::types::RedisError;
 
 extern "C" {
   fn signal(sig: u32, cb: extern fn(u32));
@@ -31,6 +32,13 @@ const TIMEOUT: usize = 1;
 
 fn get_client_addr() -> redis::ConnectionAddr {
 	redis::ConnectionAddr::Unix(PathBuf::from(SERVER_UNIX_PATH))
+}
+
+impl From<RedisError> for Error  {
+
+    fn from(err: RedisError) -> Error {
+        Error {}
+    }
 }
 
 fn handle_item (item : &str) -> Result<(), throw::Error<Error>> {
