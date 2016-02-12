@@ -47,7 +47,7 @@ fn handle(listname : String, con: redis::Connection) -> Result<(), throw::Error<
                     None => {},
                 }                
             }
-
+/*
         let result = con.brpop(listname, TIMEOUT);
         match result {
                 Ok(Some((_, item))) => {
@@ -57,16 +57,16 @@ fn handle(listname : String, con: redis::Connection) -> Result<(), throw::Error<
                 Err(err) => throw!(err),					
 				_ => {},
             }    
+*/
 
-/*
-        let pop : Option<(String, String)> = throw!();
+        let pop : Option<(String, String)> = throw!(con.brpop(listname, TIMEOUT));
 		match pop {
 		    None => {},			
 		    Some((_, item)) => {
 		    			info!("{:?}", item);
 		    			let req = up!(handle_item(item.as_ref()));
 			},
-		} */
+		} 
 
    }
 
