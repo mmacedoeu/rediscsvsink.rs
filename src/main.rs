@@ -14,7 +14,7 @@ use std::env;
 use log::{LogRecord, LogLevelFilter};
 use env_logger::LogBuilder;
 use std::io;
-use redis::types::RedisError;
+use redis::types;
 
 extern "C" {
   fn signal(sig: u32, cb: extern fn(u32));
@@ -34,10 +34,10 @@ fn get_client_addr() -> redis::ConnectionAddr {
 	redis::ConnectionAddr::Unix(PathBuf::from(SERVER_UNIX_PATH))
 }
 
-enum MyError {Io(io::Error), Redis(RedisError)}
+enum MyError {Io(io::Error), Redis(types::RedisError)}
 
-impl From<RedisError> for MyError  {
-    fn from(err: RedisError) -> MyError {
+impl From<types::RedisError> for MyError  {
+    fn from(err: types::RedisError) -> MyError {
         MyError::Redis(err)
     }
 }
@@ -48,15 +48,16 @@ impl From<io::Error> for MyError {
     }	
 }
 
-/*
+
 impl From<MyError> for io::Error {
     fn from(err: MyError) -> io::Error {
     	match err {
-    	    MyError::Redis(err) => io::Error (err),
+    	    MyError::Redis(types::ErrorRepr::IoError(err)) => io::Error (err),
     	    MyError::Io(err) => io::Error (err),
+    	    _ => io::Error {},
     	}        
     }		
-}*/
+}
 
 fn handle_item (item : &str) -> Result<(), throw::Error<io::Error>> {
 
